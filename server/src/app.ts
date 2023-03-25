@@ -1,3 +1,4 @@
+import { requireAuth } from './middleware/auth';
 import 'dotenv/config';
 import express, { NextFunction, Request, Response } from 'express';
 import createHttpError, { isHttpError } from 'http-errors';
@@ -30,7 +31,7 @@ app.use(
 );
 
 app.use('/api/users', UserRoutes);
-app.use('/api/notes', NoteRoutes);
+app.use('/api/notes', requireAuth, NoteRoutes);
 
 app.use((req, res, next) => {
   next(createHttpError(404, 'Endpoint not found'));
