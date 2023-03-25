@@ -1,8 +1,9 @@
-import { Modal, Form, Button } from "react-bootstrap";
-import { useForm } from "react-hook-form";
-import { NoteModel } from "../models/note";
-import { NoteInput } from "../network/notes_api";
-import * as NotesApi from "../network/notes_api";
+import { Modal, Form, Button } from 'react-bootstrap';
+import { useForm } from 'react-hook-form';
+import { NoteModel } from '../models/note';
+import { NoteInput } from '../network/notes_api';
+import * as NotesApi from '../network/notes_api';
+import TextInputField from './form/TextInputField';
 
 interface NoteModalProps {
   noteToEdit?: NoteModel;
@@ -21,8 +22,8 @@ const AddNoteModal = ({
     formState: { errors, isSubmitting },
   } = useForm<NoteInput>({
     defaultValues: {
-      title: noteToEdit?.title || "",
-      description: noteToEdit?.description || "",
+      title: noteToEdit?.title || '',
+      description: noteToEdit?.description || '',
     },
   });
 
@@ -44,33 +45,28 @@ const AddNoteModal = ({
   return (
     <Modal show onHide={onDismiss}>
       <Modal.Header closeButton>
-        <Modal.Title>{noteToEdit ? "Edit Note" : "Add Note"}</Modal.Title>
+        <Modal.Title>{noteToEdit ? 'Edit Note' : 'Add Note'}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <Form id="addNoteForm" onSubmit={handleSubmit(onSubmit)}>
-          <Form.Group>
-            <Form.Label>Title</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Title"
-              isInvalid={!!errors.title}
-              {...register("title", { required: "Required" })}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.title?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
-
-          <Form.Group>
-            <Form.Label>Description</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={5}
-              placeholder="Description"
-              {...register("description")}
-            />
-          </Form.Group>
+          <TextInputField
+            name="title"
+            label="Title"
+            type="text"
+            placeholder="Title"
+            register={register}
+            registerOptions={{ required: 'Required' }}
+            error={errors.title}
+          />
+          <TextInputField
+            name="description"
+            label="Description"
+            as="textarea"
+            rows={5}
+            placeholder="Description"
+            register={register}
+          />
         </Form>
       </Modal.Body>
 
