@@ -4,21 +4,37 @@ import { NoteModel } from "../models/note";
 import { NoteInput } from "../network/notes_api";
 import * as NotesApi from "../network/notes_api";
 
-interface AddNoteModalProps {
+interface NoteModalProps {
+  noteToEdit?: NoteModel;
   onDismiss: () => void;
   onNoteSaved: (note: NoteModel) => void;
 }
 
-const AddNoteModal = ({ onDismiss, onNoteSaved }: AddNoteModalProps) => {
+const AddNoteModal = ({
+  noteToEdit,
+  onDismiss,
+  onNoteSaved,
+}: NoteModalProps) => {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<NoteInput>();
+  } = useForm<NoteInput>({
+    defaultValues: {
+      title: noteToEdit?.title || "",
+      description: noteToEdit?.description || "",
+    },
+  });
 
   async function onSubmit(input: NoteInput) {
     try {
-      const noteResponse = await NotesApi.createNotes(input);
+      let noteResponse: NoteModel;
+
+      if (noteToEdit) {
+        noteResponse = await NotesApi.updateNote(noteToEdit._id, input);
+      } else {
+        noteResponse = await NotesApi.createNotes(input);
+      }
       onNoteSaved(noteResponse);
     } catch (error) {
       console.log(error);
@@ -28,7 +44,7 @@ const AddNoteModal = ({ onDismiss, onNoteSaved }: AddNoteModalProps) => {
   return (
     <Modal show onHide={onDismiss}>
       <Modal.Header closeButton>
-        <Modal.Title>Title</Modal.Title>
+        <Modal.Title>{noteToEdit ? "Edit Note" : "Add Note"}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
