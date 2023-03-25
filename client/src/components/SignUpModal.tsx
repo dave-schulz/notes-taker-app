@@ -5,7 +5,7 @@ import * as UsersApi from '../network/users_api';
 import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import TextInputField from './form/TextInputField';
 import { useState } from 'react';
-// import { ConflictError } from '../errors/http_errors';
+import { ConflictError } from '../errors/http_errors';
 
 interface SignUpModalProps {
   onDismiss: () => void;
@@ -26,11 +26,12 @@ const SignUpModal = ({ onDismiss, onSignUpSuccessful }: SignUpModalProps) => {
       const newUser = await UsersApi.signUp(credentials);
       onSignUpSuccessful(newUser);
     } catch (error) {
-      // if (error instanceof ConflictError) {
-      //   setErrorText(error.message);
-      // } else {
-      //   alert(error);
-      // }
+      if (error instanceof ConflictError) {
+        console.log(error.message);
+        setErrorText(error.message);
+      } else {
+        alert(error);
+      }
       console.error(error);
     }
   }

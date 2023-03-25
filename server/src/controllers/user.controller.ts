@@ -33,29 +33,37 @@ export const signUpHandler: RequestHandler<
       throw createHttpError(400, 'Parameters missing');
     }
 
-    const existingUsername = await UserModel.findOne({ username }).exec();
+    const existingUsername = await UserModel.findOne({
+      username: username,
+    }).exec();
 
     if (existingUsername) {
-      throw createHttpError(409, 'Username already in use');
+      throw createHttpError(
+        409,
+        'Username already taken. Please choose a different one or log in instead.',
+      );
     }
 
-    const existingEmail = await UserModel.findOne({ email }).exec();
+    const existingEmail = await UserModel.findOne({ email: email }).exec();
 
     if (existingEmail) {
-      throw createHttpError(409, 'Email is already in use');
+      throw createHttpError(
+        409,
+        'A user with this email address already exists. Please log in instead.',
+      );
     }
 
     const passwordHashed = await bcrypt.hash(passwordRaw, 10);
 
     const newUser = await UserModel.create({
-      username,
-      email,
+      username: username,
+      email: email,
       password: passwordHashed,
     });
 
     req.session.userId = newUser._id;
 
-    res.status(200).json(newUser);
+    res.status(201).json(newUser);
   } catch (error) {
     next(error);
   }
